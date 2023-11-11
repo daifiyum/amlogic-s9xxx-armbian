@@ -74,7 +74,7 @@ package_list="all"
 # Compile toolchain download mirror, run on Armbian
 dev_repo="https://github.com/ophub/kernel/releases/download/dev"
 # Arm GNU Toolchain source: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
-gun_file="arm-gnu-toolchain-12.3.rel1-aarch64-aarch64-none-elf.tar.xz"
+gun_file="arm-gnu-toolchain-13.2.rel1-aarch64-aarch64-none-elf.tar.xz"
 # Set the toolchain path
 toolchain_path="/usr/local/toolchain"
 # Set the default cross-compilation toolchain: [ gcc / clang ]
@@ -225,6 +225,12 @@ toolchain_check() {
             [[ "${?}" -eq "0" ]] || error_msg "GNU toolchain file download failed."
             tar -xJf ${toolchain_path}/${gun_file} -C ${toolchain_path}
             rm -f ${toolchain_path}/${gun_file}
+            # List and check directory names, and change them all to lowercase
+            for dir in $(ls ${toolchain_path}); do
+                if [[ -d "${toolchain_path}/${dir}" && "${dir}" != "${dir,,}" ]]; then
+                    mv -f ${toolchain_path}/${dir} ${toolchain_path}/${dir,,}
+                fi
+            done
             [[ -d "${toolchain_path}/${gun_file//.tar.xz/}/bin" ]] || error_msg "The gcc is not set!"
         fi
 

@@ -33,8 +33,7 @@ on:
           - eaidk-610
           - emb3531
           - fine3399
-          - firefly
-          - hugsun-zm
+          - firefly-rk3399
           - ipc-r
           - king3399
           - kylin3399
@@ -129,6 +128,7 @@ on:
           - tvi3315a
           - vplus
           - xiaobao
+          - zcube1-max
           - zysj
       armbian_kernel:
         description: "Select kernel version."
