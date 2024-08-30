@@ -109,8 +109,8 @@ init_var() {
     echo -e "${INFO} The device eMMC name: [ ${DEV_EMMC} ]"
 
     # Create a file preprocessing directory
-    [[ -d "${tmp_path}" ]] && rm -rf ${tmp_path}/*
     DIR_INSTALL="${tmp_path}/install"
+    [[ -d "${DIR_INSTALL}" ]] && rm -rf ${DIR_INSTALL}
     mkdir -p ${DIR_INSTALL} && chmod 777 ${tmp_path}
 
     # Regenerate new machine-id
@@ -175,7 +175,7 @@ create_partition() {
 
     # Set partition size (Unit: MiB)
     BLANK1="16"
-    BOOT="256"
+    BOOT="512"
     BLANK2="0"
 
     # Format emmc disk
@@ -294,7 +294,7 @@ copy_rootfs() {
     mkdir -p ${DIR_INSTALL}/{boot/,dev/,media/,mnt/,proc/,run/,sys/,tmp/}
     chmod 777 ${DIR_INSTALL}/tmp
     # Copy the relevant directory
-    COPY_SRC="etc home lib64 opt root selinux srv usr var"
+    COPY_SRC="etc home opt root selinux srv usr var"
     for src in ${COPY_SRC}; do
         echo -e "${INFO} Copy the [ ${src} ] directory."
         tar -cf - ${src} | (

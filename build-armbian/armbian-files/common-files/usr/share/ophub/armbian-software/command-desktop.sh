@@ -53,19 +53,57 @@ software_201() {
         if [[ -n "${get_desktop_user}" ]]; then
             sudo adduser ${get_desktop_user}
             sudo usermod -aG sudo ${get_desktop_user}
+            echo -e "${INFO} Desktop user: [ ${get_desktop_user} ]"
         else
             echo -e "${NOTE} You skipped adding the logged in desktop system user."
         fi
 
+        # Remote desktop enable option
+        echo -ne "${OPTIONS} Is remote desktop enabled? Options: (y/n): "
+        read get_rd
+        if [[ -n "${get_rd}" ]]; then
+            get_rd="${get_rd,,,}"
+            [[ "${get_rd:0:1}" == "y" ]] && get_rd="yes" || get_rd="no"
+        else
+            get_rd="no"
+        fi
+        echo -e "${INFO} Remote desktop enable option: [ ${get_rd} ]"
+
         if [[ "${VERSION_CODEID}" == "ubuntu" ]]; then
-            # Install ubuntu-desktop(gdm3) on Ubuntu (lunar/jammy/focal)
-            software_install "ubuntu-desktop lightdm lightdm-gtk-greeter"
+            # Install ubuntu-desktop(gdm3) on Ubuntu (focal/jammy/lunar/mantic)
+            software_install "ubuntu-desktop gdm3"
         elif [[ "${VERSION_CODEID}" == "debian" ]]; then
-            # Install Xfce(lightdm) on Debian (bookworm/bullseye)
-            software_install "task-xfce-desktop lightdm lightdm-gtk-greeter"
+            # Install gnome(gdm3) on Debian (bullseye/bookworm/trixie)
+            software_install "gnome gdm3"
         else
             error_msg "VERSION_CODEID not supported: [ ${VERSION_CODEID} ]"
         fi
+
+        # Install xrdp and configure
+        [[ "${get_rd}" == "yes" ]] && {
+            # Install xrdp
+            software_install "xrdp xorgxrdp"
+
+            # Configure xrdp
+            sudo cat <<EOF >>/etc/xrdp/xrdp.ini
+
+[xrdp2]
+name=Custom_Remote_Desktop
+lib=libvnc.so
+username=${get_desktop_user}
+password=ask
+ip=${my_address}
+port=-1
+code=20
+
+EOF
+
+            # Restart xrdp
+            sudo mkdir -p /var/run/xrdp
+            sudo chmod 775 /var/run/xrdp
+            sudo systemctl enable xrdp
+            sudo systemctl restart xrdp
+        }
 
         # Install Chinese desktop support
         sudo bash ${software_path}/201-desktop-chinese-fonts.sh
@@ -77,11 +115,11 @@ software_201() {
     update) software_update ;;
     remove)
         if [[ "${VERSION_CODEID}" == "ubuntu" ]]; then
-            # Remove ubuntu-desktop(gdm3) on Ubuntu (lunar/jammy/focal)
-            software_remove "ubuntu-desktop lightdm lightdm-gtk-greeter"
+            # Remove ubuntu-desktop(gdm3) on Ubuntu (focal/jammy/lunar/mantic)
+            software_remove "ubuntu-desktop gdm3"
         elif [[ "${VERSION_CODEID}" == "debian" ]]; then
-            # Remove Xfce(lightdm) on Debian (bookworm/bullseye)
-            software_remove "task-xfce-desktop lightdm lightdm-gtk-greeter"
+            # Remove gnome(gdm3) on Debian (bullseye/bookworm/trixie)
+            software_remove "gnome gdm3"
         else
             error_msg "VERSION_CODEID not supported: [ ${VERSION_CODEID} ]"
         fi
@@ -98,22 +136,36 @@ software_201() {
 software_202() {
     case "${software_manage}" in
     install)
-        [[ "${VERSION_CODENAME}" == "jammy" || "${VERSION_CODENAME}" == "lunar" ]] && {
+        case "${VERSION_CODENAME}" in
+        jammy | lunar | mantic)
             sudo add-apt-repository ppa:mozillateam/ppa -y
             sudo apt-get update
             software_install "firefox-esr"
-        }
-        [[ "${VERSION_CODENAME}" == "focal" ]] && software_install "firefox"
-        [[ "${VERSION_CODENAME}" == "bullseye" || "${VERSION_CODENAME}" == "bookworm" ]] && software_install "firefox-esr"
+            ;;
+        focal)
+            software_install "firefox"
+            ;;
+        bullseye | bookworm | trixie)
+            software_install "firefox-esr"
+            ;;
+        *) error_msg "unsupported system: [ ${VERSION_CODENAME} ]" ;;
+        esac
         ;;
     update) software_update ;;
     remove)
-        [[ "${VERSION_CODENAME}" == "jammy" || "${VERSION_CODENAME}" == "lunar" ]] && {
+        case "${VERSION_CODENAME}" in
+        jammy | lunar | mantic)
             software_remove "firefox-esr"
             sudo add-apt-repository --remove ppa:mozillateam/ppa -y
-        }
-        [[ "${VERSION_CODENAME}" == "focal" ]] && software_remove "firefox"
-        [[ "${VERSION_CODENAME}" == "bullseye" || "${VERSION_CODENAME}" == "bookworm" ]] && software_remove "firefox-esr"
+            ;;
+        focal)
+            software_remove "firefox"
+            ;;
+        bullseye | bookworm | trixie)
+            software_remove "firefox-esr"
+            ;;
+        *) error_msg "unsupported system: [ ${VERSION_CODENAME} ]" ;;
+        esac
         ;;
     *) error_msg "Invalid input parameter: [ ${@} ]" ;;
     esac

@@ -26,6 +26,7 @@
 # software_307  : For kvm
 # software_308  : For pve
 # software_309  : For casaos
+# software_310  : For arozos
 #
 #============================================================================
 
@@ -51,7 +52,7 @@ software_303() {
         tmp_download="$(mktemp -d)"
         software_filename="${software_url##*/}"
         echo -e "${STEPS} Start downloading NPS..."
-        wget -q -P ${tmp_download} ${software_url}
+        curl -fsSL "${software_url}" -o "${tmp_download}/${software_filename}"
         [[ "${?}" -eq "0" && -s "${tmp_download}/${software_filename}" ]] || error_msg "Software download failed!"
         echo -e "${INFO} Software downloaded successfully: $(ls ${tmp_download} -l)"
 
@@ -97,7 +98,7 @@ software_304() {
         tmp_download="$(mktemp -d)"
         software_filename="${software_url##*/}"
         echo -e "${STEPS} Start downloading NPC..."
-        wget -q -P ${tmp_download} ${software_url}
+        curl -fsSL "${software_url}" -o "${tmp_download}/${software_filename}"
         [[ "${?}" -eq "0" && -s "${tmp_download}/${software_filename}" ]] || error_msg "Software download failed!"
         echo -e "${INFO} Software downloaded successfully: $(ls ${tmp_download} -l)"
 
@@ -133,7 +134,7 @@ software_305() {
     install)
         # Install basic dependencies
         echo -e "${STEPS} Start installing basic dependencies..."
-        software_install "wget curl gpg gnupg2 software-properties-common apt-transport-https lsb-release ca-certificates"
+        software_install "curl gpg gnupg2 software-properties-common apt-transport-https lsb-release ca-certificates"
 
         # Add Plex Media Server APT repository
         echo -e "${STEPS} Start adding the Plex Media Server APT repository..."
@@ -141,7 +142,7 @@ software_305() {
 
         # Import GPG key
         echo -e "${STEPS} Start importing GPG keys..."
-        wget https://downloads.plex.tv/plex-keys/PlexSign.key
+        curl -fsSOL https://downloads.plex.tv/plex-keys/PlexSign.key
         cat PlexSign.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/PlexSigkey.gpg
         rm -f PlexSign.key
 
@@ -191,7 +192,7 @@ software_306() {
         tmp_download="$(mktemp -d)"
         software_filename="${software_url##*/}"
         echo -e "${STEPS} Start downloading Emby Server..."
-        wget -q -P ${tmp_download} ${software_url}
+        curl -fsSL "${software_url}" -o "${tmp_download}/${software_filename}"
         [[ "${?}" -eq "0" && -s "${tmp_download}/${software_filename}" ]] || error_msg "Software download failed!"
         echo -e "${INFO} Software downloaded successfully: $(ls ${tmp_download} -l)"
 
@@ -483,16 +484,51 @@ software_309() {
     case "${software_manage}" in
     install)
         echo -e "${STEPS} Start installing CasaOS..."
-        wget -qO- https://get.casaos.io | sudo bash
+        curl -fsSL https://get.casaos.io | sudo bash
 
         sync && sleep 3
-        echo -e "${NOTE} The CasaOS access address: [ http://${my_address}:81 ]"
+
+        # Get the CasaOS service port
+        CASA_CONF_PATH="/etc/casaos/gateway.ini"
+        CASA_PORT="$(grep "port" ${CASA_CONF_PATH} | awk -F "=" '{print $2}')"
+        [[ "${CASA_PORT}" -eq "80" ]] && my_casa_port="" || my_casa_port=":${CASA_PORT}"
+
+        echo -e "${NOTE} The CasaOS access address: [ http://${my_address}${my_casa_port} ]"
         echo -e "${SUCCESS} CasaOS installation successful."
         ;;
     update) software_update ;;
     remove)
         sudo casaos-uninstall
         echo -e "${SUCCESS} CasaOS uninstallation successful."
+        ;;
+    *) error_msg "Invalid input parameter: [ ${@} ]" ;;
+    esac
+}
+
+# For arozos
+software_310() {
+    case "${software_manage}" in
+    install)
+        echo -e "${STEPS} Start installing ArozOS..."
+        wget -O install.sh https://raw.githubusercontent.com/tobychui/arozos/master/installer/install.sh && bash install.sh
+
+        sync && sleep 3
+
+        echo -e "${SUCCESS} ArozOS installation successful."
+        ;;
+    update) software_update ;;
+    remove)
+        # Stop and disable the ArozOS service
+        sudo systemctl stop arozos.service 2>/dev/null
+        sudo systemctl disable arozos.service 2>/dev/null
+        sudo rm -f /etc/systemd/system/arozos.service 2>/dev/null
+        sudo systemctl daemon-reload
+
+        # Uninstall ArozOS
+        sudo rm -rf ~/arozos
+
+        sync && sleep 3
+        echo -e "${SUCCESS} ArozOS uninstallation successful."
         ;;
     *) error_msg "Invalid input parameter: [ ${@} ]" ;;
     esac

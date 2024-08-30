@@ -1,6 +1,6 @@
 # Armbian Software Center
 
-According to user feedback and demands in the [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues) section, common [software](../armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf) is gradually integrated to achieve one-click installation/update/uninstallation and other convenient operations. This includes `docker images`, `desktop software`, `application services`, etc.
+According to user feedback and demands in the [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues) section, common [software](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf) is gradually integrated to achieve one-click installation/update/uninstallation and other convenient operations. This includes `docker images`, `desktop software`, `application services`, etc.
 
 ## Software introduction
 
@@ -31,7 +31,7 @@ According to user feedback and demands in the [Issue](https://github.com/ophub/a
 | 123 | Alist                 | [Home](https://alist.nn.ci/) | [Docker](https://hub.docker.com/r/xhofe/alist) :5244  | A file list program that supports multiple storage, powered by Gin and Solidjs. |
 | 124 | QingLong              | [Home](https://github.com/whyour/qinglong) | [Docker](https://hub.docker.com/r/whyour/qinglong) :5700  | A timed task management panel that supports typescript, javaScript, python3, and shell. |
 | 125 | ChatGPT-Next-Web      | [Home](https://github.com/Yidadaa/ChatGPT-Next-Web) | [Docker](https://hub.docker.com/r/yidadaa/chatgpt-next-web) :3000  | A well-designed cross-platform ChatGPT UI (Web / PWA / Linux / Win / MacOS). |
-| 201 | Desktop:GNOME         | [Home](https://www.gnome.org/) | -    | GNOME provides a focused desktop working environment that helps you get things done. |
+| 201 | Desktop:GNOME         | [Home](https://www.gnome.org/) | -    | GNOME provides a focused desktop working environment that helps you get things done. `Desktop` can be connected to a monitor for use, or they can be used with [remote desktop](https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-clients) software. |
 | 202 | Firefox               | [Home](https://www.mozilla.org/) | -    | An excellent web browser. |
 | 203 | VLC                   | [Home](https://www.videolan.org/) | -    | VLC is a free, open source, cross-platform multimedia player and framework that can play most multimedia files. |
 | 204 | MPV                   | [Home](https://mpv.io/) | -    | A free, open source, and cross-platform media player. |
@@ -55,7 +55,8 @@ According to user feedback and demands in the [Issue](https://github.com/ophub/a
 | 306 | Emby-Server           | [Home](https://emby.media/) | -    | Sync your personal media to the cloud for easy backup, archiving, and converting. Store your content in multiple resolutions to enable direct streaming from any device. |
 | 307 | KVM                   | [Home](https://virt-manager.org/) | -    | KVM (for Kernel-Based Virtual Machines) is a complete virtualization solution for Linux with virtualization extensions. The virt-manager application is a desktop user interface for managing virtual machines through libvirt. It primarily targets KVM VMs, but also manages Xen and LXC (linux containers). KVM virtual machine can install [OpenWrt](https://github.com/unifreq/openwrt_packit), Debian, Ubuntu, OpenSUSE, ArchLinux, Centos, Gentoo, KyLin, UOS, etc. |
 | 308 | PVE                   | [Home](https://github.com/pimox/pimox7) | https://IP:8006 | Proxmox Virtual Environment is an open source server virtualization management solution based on QEMU/KVM and LXC. You can manage virtual machines, containers, highly available clusters, storage and networks with an integrated, easy-to-use web interface or via CLI. |
-| 309 | CasaOS                | [Home](https://github.com/IceWhaleTech/CasaOS) | https://IP:81 | CasaOS is a simple, easy-to-use, elegant open-source Personal Cloud system. |
+| 309 | CasaOS                | [Home](https://github.com/IceWhaleTech/CasaOS) | http://IP | CasaOS is a simple, easy-to-use, elegant open-source Personal Cloud system. |
+| 310 | ArozOS                | [Home](https://github.com/tobychui/arozos) | http://IP:8080 | ArozOS is a web-based desktop operating system suitable for low-power platforms. It features file/disk management, network statistics, a web server, and more. |
 
 ## Software Center Usage Guide
 
@@ -86,14 +87,14 @@ ID    NAME                STATE           MANAGE
 
 ## Software Center Development Guide
 
-The scripts/commands of the software center are stored in the [/usr/share/ophub/armbian-software](../armbian-files/common-files/usr/share/ophub/armbian-software) directory. You can use the `armbian-software -u` command to sync and download this directory to the local system, updating the local software center list. The files starting with a number are `one-click installation script` files for the corresponding software. [software-command.sh](../armbian-files/common-files/usr/share/ophub/armbian-software/software-command.sh) is a `unified instruction file` for installing/updating/removing software by commands. [software-list.conf](../armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf) is the software list configuration file, explained as follows:
+The scripts/commands of the software center are stored in the [/usr/share/ophub/armbian-software](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software) directory. You can use the `armbian-software -u` command to sync and download this directory to the local system, updating the local software center list. The files starting with a number are `one-click installation script` files for the corresponding software. [software-command.sh](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software/software-command.sh) is a `unified instruction file` for installing/updating/removing software by commands. [software-list.conf](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf) is the software list configuration file, explained as follows:
 
 ```yaml
 # 1.ID     2.Software Name     3.AuthMethod@Package      4.Execute Selection     5.Supported Release
-102        :Portainer          :docker@portainer         :command-docker.sh      :jammy@focal@bullseye
-202        :Firefox            :dpkg@firefox             :command-desktop.sh     :jammy@focal@bullseye
-302        :Frpc               :which@frpc               :302-frpc.sh            :jammy@focal@bullseye
-303        :NPS                :which@nps                :command-service.sh     :jammy@focal@bullseye
+102        :Portainer          :docker@portainer         :command-docker.sh      :all
+202        :Firefox            :dpkg@firefox             :command-desktop.sh     :all
+302        :Frpc               :which@frpc               :302-frpc.sh            :all
+308        :PVE                :dpkg@pve-manager         :command-service.sh     :bullseye@bookworm
 ...
 ```
 
@@ -102,11 +103,12 @@ The scripts/commands of the software center are stored in the [/usr/share/ophub/
 - `AuthMethod@Package`: The `check method` for the installation status of the software and the corresponding `software package`, separated by the `@` symbol.
   - For software installed with the `docker` container, check with the `docker` method, such as checking whether the `portainer` image is installed, check with `docker@portainer`.
   - For software installed with the `apt` method, check with the `dpkg` method, such as checking whether the `firefox` software package is installed, check with `dpkg@firefox`.
-  - For binary executable files installed by downloading with methods such as `wget`, check with the `which` method, such as checking whether the `frpc` service is installed, check with `which@frpc`.
+  - When there are executable files in the system's command directories (bin, sbin), use the `which` command to check for the existence of the binary command files. For instance, to verify the installation of the `frpc` service, use `which@frpc` to check.
+  - When there are no executable files in the system's command directories (bin, sbin), use the `find` command to check if a specific path exists. For example, to determine if the `ArozOS` system is installed, use `find@/root/arozos` to perform the check.
 - `Execute Selection`: Set the software to use a `unified instruction file` or an `independent script` for management.
   - For `more streamlined` operation commands, they are collectively written in `command-docker.sh / command-desktop.sh / command-service.sh` files according to software classification, and named by software number. For example, the serial number of `portainer` is `102`, and its operation is written in `software_203()`.
   - For operations that are `more complex and long in instructions`, they are managed by independent script files. For example, the independent script for installing `frpc` is named `302-frpc.sh` with the number as the prefix.
-- `Supported Release`: Set the supported Armbian `system version`. Use the `@` symbol for separation.
+- `Supported Release`: Set the supported Armbian `system version codename`. Use `all` to indicate support for all versions. If only certain versions are supported, specify the version codenames separated by `@` symbol.
 
 We welcome everyone to contribute more software. Feel free to submit support requests in the [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues).
 
@@ -114,7 +116,7 @@ We welcome everyone to contribute more software. Feel free to submit support req
 
 # Armbian 软件中心
 
-根据用户在 [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues) 中的需求反馈，逐步整合常用[软件](../armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf)，实现一键安装/更新/卸载等快捷操作。包括 `docker 镜像`、`桌面软件`、`应用服务` 等。
+根据用户在 [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues) 中的需求反馈，逐步整合常用[软件](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf)，实现一键安装/更新/卸载等快捷操作。包括 `docker 镜像`、`桌面软件`、`应用服务` 等。
 
 ## 软件介绍
 
@@ -145,7 +147,7 @@ We welcome everyone to contribute more software. Feel free to submit support req
 | 123 | Alist                 | [Home](https://alist.nn.ci/zh/) | [Docker](https://hub.docker.com/r/xhofe/alist) :5244  | 一个支持多种存储的文件列表程序，使用 Gin 和 Solidjs。 |
 | 124 | QingLong              | [Home](https://github.com/whyour/qinglong) | [Docker](https://hub.docker.com/r/whyour/qinglong) :5700  | 支持 python3、javaScript、shell、typescript 的定时任务管理面板。 |
 | 125 | ChatGPT-Next-Web      | [Home](https://github.com/Yidadaa/ChatGPT-Next-Web) | [Docker](https://hub.docker.com/r/yidadaa/chatgpt-next-web) :3000  | 一键免费部署你的跨平台私人 ChatGPT 应用。 |
-| 201 | Desktop:GNOME         | [Home](https://www.gnome.org/) | -    | GNOME 提供了一个专注的桌面工作环境，可帮助您完成工作。 |
+| 201 | Desktop:GNOME         | [Home](https://www.gnome.org/) | -    | GNOME 提供了一个专注的桌面工作环境，可帮助您完成工作。`桌面`可以连接显示器使用，也可以使用[远程桌面](https://learn.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/clients/remote-desktop-clients)软件连接使用。 |
 | 202 | Firefox               | [Home](https://www.mozilla.org/) | -    | 一款优秀的网页浏览器。 |
 | 203 | VLC                   | [Home](https://www.videolan.org/) | -    | VLC 是一款自由、开源的跨平台多媒体播放器及框架，可播放大多数多媒体文件。 |
 | 204 | MPV                   | [Home](https://mpv.io/) | -    | 一个免费的、开源的、跨平台的媒体播放器。 |
@@ -169,7 +171,8 @@ We welcome everyone to contribute more software. Feel free to submit support req
 | 306 | Emby-Server           | [Home](https://emby.media/) | -    | 将您的个人媒体同步到云，以便轻松备份、存档和转换。以多种分辨率存储您的内容，以便从任何设备直接流式传输。 |
 | 307 | KVM                   | [Home](https://virt-manager.org/) | -    | KVM（用于基于内核的虚拟机）是包含虚拟化扩展适用于 Linux 的完整虚拟化解决方案。virt-manager 应用程序是一个桌面用户界面，用于通过 libvirt 管理虚拟机。它主要针对 KVM VM，但也管理 Xen 和 LXC（Linux 容器）。KVM 虚拟机可以安装 [OpenWrt](https://github.com/unifreq/openwrt_packit)、Debian、Ubuntu、OpenSUSE、ArchLinux、Centos、Gentoo、KyLin、UOS 等等。 |
 | 308 | PVE                   | [Home](https://github.com/pimox/pimox7) | https://IP:8006 | Proxmox 虚拟环境是一个基于 QEMU/KVM 和 LXC 的开源服务器虚拟化管理解决方案。您可以使用集成的、易于使用的 web 界面或通过 CLI 管理虚拟机、容器、高可用集群、存储和网络。 |
-| 309 | CasaOS                | [Home](https://github.com/IceWhaleTech/CasaOS) | https://IP:81 | CasaOS 是一个简单、易于使用、优雅的开源个人云系统。 |
+| 309 | CasaOS                | [Home](https://github.com/IceWhaleTech/CasaOS) | http://IP | CasaOS 是一个简单、易于使用、优雅的开源个人云系统。 |
+| 310 | ArozOS                | [Home](https://github.com/tobychui/arozos) | http://IP:8080 | ArozOS 是一个适用于低功耗平台的 Web 桌面操作系统。有文件/磁盘管理，网络统计，WEB服务器等功能。 |
 
 ## 软件中心使用说明
 
@@ -200,14 +203,14 @@ ID    NAME                STATE           MANAGE
 
 ## 软件中心开发说明
 
-软件中心的脚本/命令集中存放在 [/usr/share/ophub/armbian-software](../armbian-files/common-files/usr/share/ophub/armbian-software) 目录下，使用 `armbian-software -u` 命令可以同步下载此目录至本地，更新本地的软件中心列表。其中以数字开头的文件是对应软件的 `一键安装脚本` 文件。[software-command.sh](../armbian-files/common-files/usr/share/ophub/armbian-software/software-command.sh) 是使用命令安装/更新/删除操作的`统一指令文件`。[software-list.conf](../armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf) 是软件列表配置文件，说明如下：
+软件中心的脚本/命令集中存放在 [/usr/share/ophub/armbian-software](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software) 目录下，使用 `armbian-software -u` 命令可以同步下载此目录至本地，更新本地的软件中心列表。其中以数字开头的文件是对应软件的 `一键安装脚本` 文件。[software-command.sh](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software/software-command.sh) 是使用命令安装/更新/删除操作的`统一指令文件`。[software-list.conf](../build-armbian/armbian-files/common-files/usr/share/ophub/armbian-software/software-list.conf) 是软件列表配置文件，说明如下：
 
 ```yaml
 # 1.ID     2.Software Name     3.AuthMethod@Package      4.Execute Selection     5.Supported Release
-102        :Portainer          :docker@portainer         :command-docker.sh      :jammy@focal@bullseye
-202        :Firefox            :dpkg@firefox             :command-desktop.sh     :jammy@focal@bullseye
-302        :Frpc               :which@frpc               :302-frpc.sh            :jammy@focal@bullseye
-303        :NPS                :which@nps                :command-service.sh     :jammy@focal@bullseye
+102        :Portainer          :docker@portainer         :command-docker.sh      :all
+202        :Firefox            :dpkg@firefox             :command-desktop.sh     :all
+302        :Frpc               :which@frpc               :302-frpc.sh            :all
+308        :PVE                :dpkg@pve-manager         :command-service.sh     :bullseye@bookworm
 ...
 ```
 
@@ -216,11 +219,12 @@ ID    NAME                STATE           MANAGE
 - `AuthMethod@Package`：软件安装状态的`检查方法`，与对应的`软件包`，使用 `@` 符号分割。
   - 使用 `docker` 容器安装的镜像，采用 `docker` 方式检查，如检查是否安装了 `portainer` 镜像，使用 `docker@portainer` 进行检查；
   - 使用 `apt` 方式安装的软件包采用 `dpkg` 方式检查，如检查是否安装了 `firefox` 软件包，使用 `dpkg@firefox` 进行检查；
-  - 使用 `wget` 等方式下载安装的二进制执行文件，采用 `which` 方式检查，如检查是否安装了 `frpc` 服务，使用 `which@frpc` 进行检查。
+  - 在系统命令目录 (bin,sbin) 有可执行文件时，采用 `which` 方式检查二进制命令文件是否存在，如检查是否安装了 `frpc` 服务，使用 `which@frpc` 进行检查。
+  - 在系统命令目录 (bin,sbin) 没有可执行文件时，采用 `find` 方式检查指定路径是否存在，如检查是否安装了 `arozos` 系统，使用 `find@/root/arozos` 进行检查。
 - `Execute Selection`：设置软件使用 `统一指令文件` 或 `独立脚本` 进行管理。
   - 对于 `比较精简` 的操作命令，按照软件分类，集中写在 `command-docker.sh / command-desktop.sh / command-service.sh` 文件中，以软件序号进行命名。如 `portainer` 的序号是 `102`，他的操作写在 `software_203()` 中；
   - 对于 `比较复杂、指令内容较长` 的操作，进行独立脚本文件管理。如安装 `frpc` 的独立脚本，以序号开头，命名为 `302-frpc.sh` 。
-- `Supported Release`：设置支持的 Armbian `系统版本`。使用 `@` 符号分割。
+- `Supported Release`：设置支持的 Armbian `系统版本代号`。全部版本都支持的使用 `all` 表示。仅本支持部分版本的填写版本代号，多个版本代号之间使用 `@` 符号连接。
 
 欢迎大家补充更多软件。欢迎在 [Issue](https://github.com/ophub/amlogic-s9xxx-armbian/issues) 中提交支持需求。
 
